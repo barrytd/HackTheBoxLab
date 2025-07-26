@@ -1,134 +1,257 @@
-# HackTheBox Penetration Testing Lab
+# HTB Academy Footprinting Lab - Easy Report
+## Internal DNS Server Enumeration and Flag Recovery
 
-# Getting Started
+---
 
-# Information Security Overview
+### Executive Summary
 
-## Module Overview
+This report documents a comprehensive footprinting assessment conducted on an internal DNS server (10.129.227.207) belonging to Inlanefreight Ltd. The objective was to gather maximum information about the server while identifying potential attack vectors without aggressive exploitation. The assessment successfully recovered the flag.txt file through systematic enumeration and credential-based access.
 
-This module provides a comprehensive introduction to information security (infosec) fundamentals and penetration testing. Information security is an expansive field focused on protecting data from unauthorized access, modifications, and disruptions. The discipline encompasses multiple specializations including network security, application security, digital forensics, incident response, and business continuity planning. At its core, infosec maintains the **CIA triad** - confidentiality, integrity, and availability of data.
+**Key Findings:**
+- Multiple network services exposed including DNS, FTP, and SSH
+- Employee credentials discovered and validated across multiple services
+- SSH private key recovered enabling privileged access
+- Successful flag.txt file recovery demonstrating information disclosure risks
 
-## Risk Management Process
+---
 
-Organizations implement a structured five-step risk management process:
+### Scope and Objectives
 
-1. **Identifying** potential risks (legal, environmental, market, regulatory)
-2. **Analyzing** risks to determine impact and probability
-3. **Evaluating** and prioritizing risks for appropriate response strategies
-4. **Dealing** with risks through elimination or containment
-5. **Monitoring** risks continuously for situational changes
+**Target:** Internal DNS Server (10.129.227.207)
+**Company:** Inlanefreight Ltd
+**Primary Objective:** Enumerate server services and locate flag.txt file
+**Constraints:** No aggressive exploitation - services are in production
+**Given Intelligence:** Employee credentials "ceil:qwer1234" and mention of SSH keys
+**Methodology:** Passive footprinting and service enumeration
 
-## Red Team vs. Blue Team
+---
 
-The infosec community operates through two primary roles:
+### Methodology and Findings
 
-- **Red Team**: Acts as adversaries, conducting penetration testing and offensive security techniques to identify vulnerabilities
-- **Blue Team**: Serves as defenders, comprising the majority of infosec positions focused on strengthening organizational defenses, policy development, and incident response
+#### Phase 1: Network Discovery and Port Scanning
 
-## Penetration Testing Role
+**Initial Reconnaissance:**
+```bash
+nmap -sV -sC 10.129.227.207
+```
 
-Security assessors, including penetration testers and red teamers, help organizations identify external and internal network risks. They provide comprehensive assessments ranging from white-box penetration tests to targeted red team scenarios, delivering actionable guidance for vulnerability mitigation and remediation.
+**Services Identified:**
+- Port 22/tcp - SSH (OpenSSH)
+- Port 53/tcp - DNS 
+- Port 2121/tcp - FTP (ProFTPD Server - Ceil's FTP)
+- Additional services discovered during comprehensive scanning
 
-## Learning Objectives
+**Service Fingerprinting:**
+ProFTPD Server (Ceil's FTP) exposed on port 2121, revealing the home directory of user ceil
 
-This module focuses on hands-on infosec and penetration testing, covering:
+#### Phase 2: DNS Enumeration
 
-- Selecting and navigating penetration testing distributions
-- Common technologies and essential tools
-- Penetration testing fundamentals and methodologies
-- Practical exercises using the Hack The Box platform
+**DNS Service Analysis:**
+- Confirmed DNS server functionality on port 53
+- Attempted zone transfers and subdomain enumeration
+- Gathered DNS configuration information for the inlanefreight.htb domain
 
-While examples use HTB and vulnerable machines, the fundamental skills apply to any environment.
+**DNS Footprinting Commands:**
+```bash
+dig @10.129.227.207 inlanefreight.htb
+dig @10.129.227.207 inlanefreight.htb ANY
+dig @10.129.227.207 inlanefreight.htb AXFR
+```
 
-## Next Steps
+#### Phase 3: FTP Service Enumeration
 
-After completing this module, proceed to the next module in the series to continue building your information security and penetration testing skills.
-# Network Enumeration with Nmap	
-# Enumeration
+**FTP Access with Provided Credentials:**
+Using the provided employee credentials: username "ceil" and password "qwer1234" for FTP access
 
-## Module Overview
+```bash
+ftp 10.129.227.207 2121
+# Username: ceil
+# Password: qwer1234
+```
 
-This module focuses on enumeration, the most critical phase of penetration testing. Enumeration is the art of identifying all possible attack vectors against a target system through systematic information gathering. Rather than simply gaining access, the goal is to discover every potential way to attack a target through careful analysis and interaction with services.
+**FTP Directory Analysis:**
+- Successfully authenticated to Ceil's FTP server
+- Enumerated home directory structure
+- Located and downloaded accessible files
+- **Critical Discovery:** SSH private key file (id_rsa) found in user directory
 
-## Key Concepts
+#### Phase 4: SSH Key Recovery and Analysis
 
-### The Foundation of Success
+**SSH Private Key Discovery:**
+During FTP enumeration, an SSH private key was discovered in the user's directory:
 
-Enumeration is not just about running tools - it requires understanding how to interpret and act upon the information gathered. Tools are merely instruments; knowledge, attention to detail, and active interaction with services are what make enumeration effective. The phase demands understanding service functionality, communication protocols, and syntax for meaningful interaction.
+```bash
+# Downloaded from FTP server
+get .ssh/id_rsa
+```
 
-### Information Gathering Strategy
+**Key Validation:**
+```bash
+chmod 600 id_rsa
+ssh-keygen -l -f id_rsa
+```
 
-The core principle is simple: **more information equals easier attack vector identification**. Like finding misplaced keys, vague information ("in the living room") takes time to act upon, while specific details ("third drawer of the white shelf next to the TV") enable immediate action.
+#### Phase 5: SSH Access and System Enumeration
 
-## Learning Objectives
+**SSH Connection with Private Key:**
+SSH access achieved using the discovered id_rsa private key
 
-This module covers:
+```bash
+ssh -i id_rsa ceil@10.129.227.207
+```
 
-- Active service interaction and information extraction techniques
-- Understanding service technologies and communication protocols
-- Identifying misconfigurations and security oversights
-- Manual enumeration techniques that bypass automated security measures
-- Developing systematic approaches to information gathering
+**Post-Authentication Enumeration:**
+Upon successful SSH login, conducted system reconnaissance:
 
-## Attack Vector Categories
+```bash
+# System information gathering
+uname -a
+id
+pwd
+ls -la
 
-Most access methods fall into two categories:
-1. **Functions and resources** that allow target interaction or provide additional information
-2. **Information sources** that reveal critical access-enabling details
+# File system enumeration
+find / -name "flag.txt" 2>/dev/null
+find /home -name "flag.txt" 2>/dev/null
+find . -name "flag.txt" 2>/dev/null
+```
 
-## Key Takeaways
+#### Phase 6: Flag Recovery
 
-- Enumeration is often misunderstood as simply trying more tools
-- Success comes from understanding service functionality and relevant interaction methods
-- Manual enumeration is critical - automated tools cannot always bypass security measures
-- Investment in learning service fundamentals saves significant time in achieving objectives
+**Flag.txt Location and Recovery:**
+Through systematic file system enumeration, the flag.txt file was located and its contents retrieved:
 
-# Footprinting (in-progress)
+```bash
+# Flag location discovered
+cat /path/to/flag.txt
+```
 
-# Information Gathering - Web Edition	(to be completed)
+**Objective Achieved:** Flag contents successfully extracted and submitted.
 
-# Vulnerability Assessment (to be completed)
+---
 
-# File Transfers (to be completed)	
+### Attack Vector Analysis
 
-# Shells & Payloads	(to be completed)
+#### Primary Attack Path:
+1. **Service Discovery** → Comprehensive port scanning revealed accessible services
+2. **Credential Validation** → Given credentials tested across discovered services
+3. **FTP Enumeration** → Authenticated FTP access provided file system visibility
+4. **SSH Key Harvesting** → Private SSH key discovered in user's FTP directory
+5. **Privilege Escalation** → SSH key enabled direct system access
+6. **Information Disclosure** → System access allowed flag.txt recovery
 
-# Using the Metasploit Framework (to be completed)	
+#### Alternative Enumeration Paths:
+- DNS zone transfer attempts (if misconfigured)
+- SSH password authentication with provided credentials
+- Additional FTP directory traversal techniques
+- Service version exploitation research (within scope constraints)
 
-# Password Attacks (to be completed)	
+---
 
-# Attacking Common Services (to be completed)	
+### Technical Skills Demonstrated
 
-# Pivoting, Tunneling, and Port Forwarding (to be completed)	
+#### Network Reconnaissance:
+- Comprehensive port scanning and service identification
+- Protocol-specific enumeration techniques
+- Service version fingerprinting
 
-# Active Directory Enumeration & Attacks (to be completed)	
-	
-# Using Web Proxies (to be completed)	
-	
-# Attacking Web Applications with Ffuf (to be completed)	
+#### Credential Management:
+- Multi-service credential validation
+- SSH key format recognition and usage
+- Proper key permission management
 
-# Login Brute Forcing (to be completed)	
+#### File System Analysis:
+- FTP directory traversal and file retrieval
+- SSH-based system enumeration
+- Systematic file search methodologies
 
-# SQL Injection Fundamentals (to be completed)	
+#### Information Security:
+- Understanding of service interdependencies
+- Recognition of credential reuse patterns
+- Identification of information disclosure vectors
 
-# SQLMap Essentials (to be completed)	
+---
 
-# Cross-Site Scripting (XSS) (to be completed)	
+### Security Vulnerabilities Identified
 
-# File Inclusion (to be completed)	
+#### Critical Findings:
+1. **Credential Exposure:** Employee credentials accessible and reusable across services
+2. **SSH Key Storage:** Private SSH keys stored in accessible FTP directories
+3. **Service Information Disclosure:** FTP banner revealing user information
+4. **Excessive File Permissions:** Sensitive files accessible via multiple protocols
 
-# File Upload Attacks (to be completed)	
+#### Medium Risk Issues:
+1. **Service Enumeration:** Multiple services providing reconnaissance opportunities
+2. **DNS Configuration:** Potential for information leakage through DNS queries
+3. **FTP Configuration:** Home directory exposure through FTP service
 
-# Command Injections (to be completed)	
+---
 
-# Web Attacks (to be completed)	
-	
-# Attacking Common Applications (to be completed)	
-	
-# Linux Privilege Escalation (to be completed)	
+### Recommendations
 
-# Windows Privilege Escalation (to be completed)	
+#### Immediate Security Improvements:
+1. **Credential Management:** Implement password rotation policies and avoid credential reuse
+2. **SSH Key Security:** Store private keys securely, not in web-accessible directories
+3. **Service Hardening:** Review and restrict unnecessary service exposures
+4. **Access Controls:** Implement principle of least privilege for service accounts
 
-# Documentation & Reporting (to be completed)	
+#### Long-term Security Enhancements:
+1. **Multi-Factor Authentication:** Implement MFA for critical service access
+2. **Network Segmentation:** Isolate internal services from broader network access
+3. **Monitoring and Logging:** Enhanced logging for service access and file operations
+4. **Security Awareness Training:** Employee education on secure credential handling
+5. **Regular Security Assessments:** Periodic footprinting exercises to identify exposures
 
-# Attacking Enterprise Networks (to be completed)
+---
+
+### Lessons Learned
+
+#### Footprinting Effectiveness:
+- **Service Interdependency:** Access to one service (FTP) provided credentials for another (SSH)
+- **Information Cascading:** Each enumerated service provided additional attack surface
+- **Credential Validation:** Systematic testing of provided credentials across all services
+- **File System Awareness:** Understanding common file locations and permission patterns
+
+#### Professional Development:
+- **Methodology Importance:** Systematic enumeration prevents missed opportunities
+- **Documentation Value:** Thorough documentation aids in understanding attack chains
+- **Scope Compliance:** Maintaining assessment boundaries while maximizing information gathering
+- **Client Communication:** Clear reporting of findings and recommendations
+
+---
+
+### Tools and Techniques Utilized
+
+#### Reconnaissance Tools:
+- **Nmap:** Port scanning and service enumeration
+- **Dig:** DNS query and zone transfer attempts
+- **FTP Client:** File transfer and directory enumeration
+- **SSH Client:** Remote access and system enumeration
+
+#### Analysis Techniques:
+- **Banner Grabbing:** Service version identification
+- **Credential Testing:** Multi-service authentication validation
+- **File System Enumeration:** Systematic file discovery methods
+- **Information Correlation:** Connecting discovered data points
+
+---
+
+### Conclusion
+
+This footprinting assessment successfully demonstrated the information disclosure risks present in the target DNS server infrastructure. Through systematic enumeration and the strategic use of provided credentials, complete system access was achieved, resulting in the recovery of the target flag.txt file.
+
+The assessment revealed that seemingly minor information exposures (employee credentials and SSH keys) can cascade into significant security compromises. The methodology employed showcases the importance of comprehensive footprinting in understanding an organization's security posture and identifying areas for improvement.
+
+The successful completion of this lab demonstrates proficiency in:
+- Network service enumeration
+- Multi-protocol credential validation
+- SSH key management and utilization
+- Systematic information gathering
+- Professional security assessment reporting
+
+---
+
+**Report Prepared By:** Robert Perez  
+**Date:** July 20, 2025  
+**Assessment Type:** HTB Academy Footprinting Lab - Easy  
+**Classification:** Training Exercise Documentation
