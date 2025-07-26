@@ -1,137 +1,234 @@
-# HackTheBox Penetration Testing Lab
+# Internal Server Penetration Test Report
+## HTB User Credential Discovery Lab
 
-# Getting Started
+---
 
-# Information Security Overview
+### Executive Summary
 
-## Module Overview
+This report documents a comprehensive penetration test conducted on an internal Windows server (10.129.202.41) with the objective of discovering credentials for a user named "HTB". The assessment successfully identified multiple attack vectors and ultimately recovered the target credentials through systematic enumeration and privilege escalation.
 
-This module provides a comprehensive introduction to information security (infosec) fundamentals and penetration testing. Information security is an expansive field focused on protecting data from unauthorized access, modifications, and disruptions. The discipline encompasses multiple specializations including network security, application security, digital forensics, incident response, and business continuity planning. At its core, infosec maintains the **CIA triad** - confidentiality, integrity, and availability of data.
+**Key Findings:**
+- Multiple network services exposed with varying access controls
+- Sensitive credential information stored in unprotected network shares
+- SQL Server database containing developer account credentials
+- Successful credential recovery for the HTB user
 
-## Risk Management Process
+---
 
-Organizations implement a structured five-step risk management process:
+### Scope and Objectives
 
-1. **Identifying** potential risks (legal, environmental, market, regulatory)
-2. **Analyzing** risks to determine impact and probability
-3. **Evaluating** and prioritizing risks for appropriate response strategies
-4. **Dealing** with risks through elimination or containment
-5. **Monitoring** risks continuously for situational changes
+**Target:** Internal Windows Server (10.129.202.41)
+**Primary Objective:** Locate and extract credentials for user "HTB"
+**Methodology:** Black-box penetration testing approach
+**Tools Used:** Nmap, SMB enumeration tools, NFS utilities, RDP clients, SQL Server tools
 
-## Red Team vs. Blue Team
+---
 
-The infosec community operates through two primary roles:
+### Methodology and Findings
 
-- **Red Team**: Acts as adversaries, conducting penetration testing and offensive security techniques to identify vulnerabilities
-- **Blue Team**: Serves as defenders, comprising the majority of infosec positions focused on strengthening organizational defenses, policy development, and incident response
+#### Phase 1: Network Discovery and Port Scanning
 
-## Penetration Testing Role
+**Initial TCP Port Scan:**
+```bash
+nmap -sV -sC 10.129.202.41
+```
 
-Security assessors, including penetration testers and red teamers, help organizations identify external and internal network risks. They provide comprehensive assessments ranging from white-box penetration tests to targeted red team scenarios, delivering actionable guidance for vulnerability mitigation and remediation.
+**Key Ports Identified:**
+- Port 111/tcp - RPC Bind
+- Port 135/tcp - Microsoft Windows RPC
+- Port 139/tcp - NetBIOS Session Service
+- Port 445/tcp - Microsoft Directory Services (SMB)
+- Port 2049/tcp - Network File System (NFS)
+- Port 3389/tcp - Remote Desktop Protocol (RDP)
 
-## Learning Objectives
+**System Information Discovered:**
+- Hostname: WINMEDIUM
+- Operating System: Windows Server (Build 10.0.17763)
+- Domain: WINMEDIUM
 
-This module focuses on hands-on infosec and penetration testing, covering:
+#### Phase 2: Service Enumeration
 
-- Selecting and navigating penetration testing distributions
-- Common technologies and essential tools
-- Penetration testing fundamentals and methodologies
-- Practical exercises using the Hack The Box platform
+**NFS Enumeration:**
+```bash
+showmount -e 10.129.202.41
+```
+**Result:** Discovered `/TechSupport` export accessible to everyone
 
-While examples use HTB and vulnerable machines, the fundamental skills apply to any environment.
+**NFS Mount and Analysis:**
+```bash
+sudo mount -t nfs 10.129.202.41:/TechSupport /tmp/nfs_mount
+```
 
-## Next Steps
+**Critical Finding:** Located support ticket file `ticket4238791283782.txt` containing:
+- SMTP configuration with embedded credentials
+- Username: alex
+- Password: lol123!mD
+- Email domain: web.dev.inlanefreight.htb
 
-After completing this module, proceed to the next module in the series to continue building your information security and penetration testing skills.
-# Network Enumeration with Nmap	
-# Enumeration
+#### Phase 3: SMB Share Analysis
 
-## Module Overview
+**SMB Enumeration with Discovered Credentials:**
+```bash
+smbclient -L //10.129.202.41 -U alex%'lol123!mD'
+smbmap -H 10.129.202.41 -u alex -p 'lol123!mD'
+```
 
-This module focuses on enumeration, the most critical phase of penetration testing. Enumeration is the art of identifying all possible attack vectors against a target system through systematic information gathering. Rather than simply gaining access, the goal is to discover every potential way to attack a target through careful analysis and interaction with services.
+**Accessible Shares Identified:**
+- `devshare` - READ/WRITE access
+- `Users` - READ ONLY access
+- `IPC$` - READ ONLY access
 
-## Key Concepts
+**devshare Analysis:**
+Located `important.txt` containing additional credentials:
+- Username: sa (System Administrator)
+- Password: 87N1ns@slls83
 
-### The Foundation of Success
+#### Phase 4: UDP Service Discovery
 
-Enumeration is not just about running tools - it requires understanding how to interpret and act upon the information gathered. Tools are merely instruments; knowledge, attention to detail, and active interaction with services are what make enumeration effective. The phase demands understanding service functionality, communication protocols, and syntax for meaningful interaction.
+**UDP Port Scan:**
+```bash
+sudo nmap -sU --top-ports 1000 10.129.202.41
+```
 
-### Information Gathering Strategy
+**Additional Services Identified:**
+- Port 123/udp - NTP (open|filtered)
+- Port 161/udp - SNMP (open|filtered)
 
-The core principle is simple: **more information equals easier attack vector identification**. Like finding misplaced keys, vague information ("in the living room") takes time to act upon, while specific details ("third drawer of the white shelf next to the TV") enable immediate action.
+**SNMP Enumeration Attempts:**
+Multiple SNMP community string tests performed but yielded no additional credential information.
 
-## Learning Objectives
+#### Phase 5: Remote Access and Privilege Escalation
 
-This module covers:
+**RDP Access Attempts:**
+Initial RDP connections faced display configuration challenges in the testing environment.
 
-- Active service interaction and information extraction techniques
-- Understanding service technologies and communication protocols
-- Identifying misconfigurations and security oversights
-- Manual enumeration techniques that bypass automated security measures
-- Developing systematic approaches to information gathering
+**Alternative Access Methods:**
+- Attempted WinRM connections (port 5985 confirmed open)
+- Tested various authentication methods with discovered credentials
 
-## Attack Vector Categories
+**Successful RDP Connection:**
+Successfully established RDP session using alex credentials after resolving display issues.
 
-Most access methods fall into two categories:
-1. **Functions and resources** that allow target interaction or provide additional information
-2. **Information sources** that reveal critical access-enabling details
+#### Phase 6: Internal System Analysis
 
-## Key Takeaways
+**Local System Enumeration:**
+From RDP session, conducted internal reconnaissance:
+- Verified local user accounts
+- Attempted privilege escalation with SA credentials
+- Explored file system for additional credential stores
 
-- Enumeration is often misunderstood as simply trying more tools
-- Success comes from understanding service functionality and relevant interaction methods
-- Manual enumeration is critical - automated tools cannot always bypass security measures
-- Investment in learning service fundamentals saves significant time in achieving objectives
+#### Phase 7: SQL Server Investigation
 
-## Next Steps
+**Database Service Discovery:**
+Identified Microsoft SQL Server running on localhost (not externally accessible).
 
-After mastering enumeration fundamentals, proceed to the next module to build upon these critical information gathering skills.
-# Footprinting (in-progress)
+**SQL Server Access:**
+```sql
+sqlcmd -S localhost -E
+```
+Successfully connected using Windows Authentication.
 
-# Information Gathering - Web Edition	(to be completed)
+**Database Enumeration:**
+```sql
+SELECT name FROM sys.databases;
+GO
+```
 
-# Vulnerability Assessment (to be completed)
+**Databases Identified:**
+- master (system database)
+- tempdb (system database)
+- model (system database)
+- msdb (system database)
+- accounts (custom database - TARGET)
 
-# File Transfers (to be completed)	
+**Target Database Analysis:**
+```sql
+USE accounts;
+GO
+SELECT name FROM sys.tables;
+GO
+```
 
-# Shells & Payloads	(to be completed)
+**Critical Table Discovered:** `devsacc` (developer accounts)
 
-# Using the Metasploit Framework (to be completed)	
+**Final Credential Recovery:**
+```sql
+SELECT * FROM devsacc;
+GO
+```
 
-# Password Attacks (to be completed)	
+**OBJECTIVE ACHIEVED:** HTB user credentials successfully extracted from the devsacc table.
 
-# Attacking Common Services (to be completed)	
+---
 
-# Pivoting, Tunneling, and Port Forwarding (to be completed)	
+### Attack Chain Summary
 
-# Active Directory Enumeration & Attacks (to be completed)	
-	
-# Using Web Proxies (to be completed)	
-	
-# Attacking Web Applications with Ffuf (to be completed)	
+1. **Initial Reconnaissance** → Port scanning revealed multiple services
+2. **NFS Exploitation** → Mounted TechSupport share, found support ticket
+3. **Credential Harvesting** → Extracted alex user credentials from ticket
+4. **SMB Enumeration** → Used alex creds to access additional shares
+5. **Privilege Discovery** → Found SA (sysadmin) credentials in devshare
+6. **Remote Access** → Established RDP session for internal access
+7. **Internal Enumeration** → Discovered SQL Server running internally
+8. **Database Compromise** → Accessed accounts database via SQL Server
+9. **Target Achievement** → Extracted HTB credentials from developer accounts table
 
-# Login Brute Forcing (to be completed)	
+---
 
-# SQL Injection Fundamentals (to be completed)	
+### Security Vulnerabilities Identified
 
-# SQLMap Essentials (to be completed)	
+#### Critical Vulnerabilities:
+1. **Unprotected NFS Export:** TechSupport share accessible without authentication
+2. **Credential Exposure:** Plaintext credentials stored in support ticket files
+3. **Excessive SMB Permissions:** User accounts with unnecessary write access to shares
+4. **Insecure Credential Storage:** Administrator credentials stored in plaintext files
+5. **Database Security:** Developer credentials stored without encryption in SQL database
 
-# Cross-Site Scripting (XSS) (to be completed)	
+#### Medium Vulnerabilities:
+1. **Service Exposure:** Multiple unnecessary services exposed to network
+2. **SNMP Configuration:** SNMP service potentially misconfigured
+3. **Authentication Methods:** Weak password policies evidenced by discovered credentials
 
-# File Inclusion (to be completed)	
+---
 
-# File Upload Attacks (to be completed)	
+### Recommendations
 
-# Command Injections (to be completed)	
+#### Immediate Actions:
+1. **Secure NFS Exports:** Implement proper access controls on NFS shares
+2. **Credential Management:** Remove plaintext credentials from file shares
+3. **Database Security:** Encrypt sensitive data in SQL Server databases
+4. **Access Control Review:** Audit and restrict SMB share permissions
+5. **Service Hardening:** Disable unnecessary network services
 
-# Web Attacks (to be completed)	
-	
-# Attacking Common Applications (to be completed)	
-	
-# Linux Privilege Escalation (to be completed)	
+#### Long-term Improvements:
+1. **Privileged Access Management:** Implement PAM solution for administrative accounts
+2. **Network Segmentation:** Isolate internal services from broader network access
+3. **Monitoring and Logging:** Enhanced logging for credential access and database queries
+4. **Security Awareness:** Training for secure credential handling in support processes
+5. **Regular Security Assessments:** Periodic penetration testing to identify vulnerabilities
 
-# Windows Privilege Escalation (to be completed)	
+---
 
-# Documentation & Reporting (to be completed)	
+### Technical Skills Demonstrated
 
-# Attacking Enterprise Networks (to be completed)
+- **Network Reconnaissance:** Comprehensive port scanning and service identification
+- **Protocol Analysis:** NFS, SMB, RDP, and SQL Server protocol knowledge
+- **Credential Harvesting:** Multiple techniques for discovering stored credentials
+- **Privilege Escalation:** Systematic approach to gaining elevated access
+- **Database Exploitation:** SQL Server enumeration and data extraction
+- **Tool Proficiency:** Expert use of penetration testing tools and techniques
+
+---
+
+### Conclusion
+
+This engagement successfully demonstrated a complete attack path from initial network discovery to target credential extraction. The assessment revealed multiple security vulnerabilities that, when chained together, allowed unauthorized access to sensitive credential information. The systematic methodology employed showcases advanced penetration testing capabilities and thorough understanding of Windows infrastructure security.
+
+The HTB user credentials were successfully recovered, demonstrating the real-world impact of the identified vulnerabilities and the importance of implementing comprehensive security controls across all system components.
+
+---
+
+**Report Prepared By:** Robert Perez
+**Date:** July 26, 2025  
+**Assessment Duration:** 2 hours
+**Classification:** Internal Security Assessment
