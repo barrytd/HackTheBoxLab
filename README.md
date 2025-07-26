@@ -83,9 +83,6 @@ Most access methods fall into two categories:
 - Manual enumeration is critical - automated tools cannot always bypass security measures
 - Investment in learning service fundamentals saves significant time in achieving objectives
 
-## Next Steps
-
-After mastering enumeration fundamentals, proceed to the next module to build upon these critical information gathering skills.
 # Footprinting (in-progress)
 
 # Information Gathering - Web Edition	(to be completed)
