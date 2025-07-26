@@ -1,10 +1,6 @@
 # HackTheBox Penetration Testing Lab
 
-# Getting Started
-
-# Information Security Overview
-
-## Module Overview
+# Information Security Module Overview
 
 This module provides a comprehensive introduction to information security (infosec) fundamentals and penetration testing. Information security is an expansive field focused on protecting data from unauthorized access, modifications, and disruptions. The discipline encompasses multiple specializations including network security, application security, digital forensics, incident response, and business continuity planning. At its core, infosec maintains the **CIA triad** - confidentiality, integrity, and availability of data.
 
@@ -83,9 +79,104 @@ Most access methods fall into two categories:
 - Manual enumeration is critical - automated tools cannot always bypass security measures
 - Investment in learning service fundamentals saves significant time in achieving objectives
 
-# Footprinting (in-progress)
+# Footprinting Module
 
-# Information Gathering - Web Edition	(to be completed)
+## Overview
+
+This comprehensive module focuses on manual enumeration techniques, footprinting methodologies, and interaction protocols for a diverse range of network services. Designed for cybersecurity professionals and penetration testers, this module provides hands-on experience with essential reconnaissance and enumeration skills.
+
+## Learning Objectives
+
+Upon completion of this module, you will master manual techniques for:
+- **Enumeration principles** - Core methodologies and systematic approaches
+- **Infrastructure-based enumeration** - Network infrastructure discovery and mapping
+- **Service-specific enumeration** across multiple protocols and platforms
+
+## Covered Services and Protocols
+
+### File and Network Services
+- **FTP** (File Transfer Protocol)
+- **SMB** (Server Message Block)
+- **NFS** (Network File System)
+
+### Communication and Mail Services
+- **DNS** (Domain Name System)
+- **SMTP** (Simple Mail Transfer Protocol)
+- **IMAP/POP3** (Internet Message Access Protocol / Post Office Protocol)
+
+### Management and Database Services
+- **SNMP** (Simple Network Management Protocol)
+- **MySQL / MSSQL** (Database management systems)
+- **IPMI** (Intelligent Platform Management Interface)
+- **Windows and Linux remote management protocols**
+
+## Certification Alignment
+
+This module aligns with multiple professional certification standards:
+
+| Certification | Relevant Sections |
+|---------------|-------------------|
+| **CREST CPSA/CRT** | All sections |
+| **CREST CCT APP** | All sections |
+| **CREST CCT INF** | All sections |
+
+## Module Structure
+
+### Format
+- **Difficulty Level**: Medium
+- **Structure**: Sectioned approach with hands-on exercises
+- **Assessment**: Practical skills assessment upon completion
+- **Flexibility**: Start/stop capability with progress tracking
+
+### Interactive Elements
+- Hands-on exercises for each technique
+- Real-world command examples with output
+- Target hosts for practice environments
+- Skills assessment for knowledge validation
+
+## Prerequisites
+
+### Required Knowledge
+- Working proficiency with Linux command line
+- Understanding of information security fundamentals
+
+### Recommended Prerequisite Modules
+1. **Linux Fundamentals**
+2. **Network Enumeration with Nmap**
+3. **Introduction to Networking**
+4. **Windows Fundamentals**
+
+## Getting Started
+
+### Practice Environment
+- Interactive sections with provided target hosts
+- Compatible with personal virtual machines
+- No time constraints or grading pressure
+
+### Completion Requirements
+- Complete all section exercises
+- Pass the practical skills assessment
+- Earn maximum cubes for pathway progression
+
+## Best Practices
+
+### Learning Approach
+- Reproduce example commands in your practice environment
+- Experiment with variations of demonstrated techniques
+- Document your findings and methodologies
+- Practice systematic enumeration approaches
+
+### Skills Development
+- Focus on understanding underlying protocols
+- Develop efficient enumeration workflows
+- Master both automated and manual techniques
+- Build comprehensive service fingerprinting abilities
+
+## Support and Resources
+
+This module provides comprehensive coverage of manual enumeration techniques essential for cybersecurity professionals. The hands-on approach ensures practical skill development applicable to real-world penetration testing and security assessment scenarios.
+
+# Information Gathering - Web Edition (in-progress)
 
 # Vulnerability Assessment (to be completed)
 
