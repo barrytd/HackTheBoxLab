@@ -228,6 +228,6 @@ The HTB user credentials were successfully recovered, demonstrating the real-wor
 
 ---
 
-Report Prepared By: Robert Perez
-Date: July 26, 2025
-Assessment Type: HTB Academy Footprinting Lab - Medium
+**Report Prepared By:** Robert Perez  
+**Date:** July 27, 2025  
+**Assessment Type:** HTB Academy Footprinting Lab - Medium
