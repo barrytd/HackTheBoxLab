@@ -256,4 +256,10 @@ select * from users;
 
 ---
 
+**Report Prepared By:** Robert Perez  
+**Date:** July 27, 2025  
+**Assessment Type:** HTB Academy Footprinting Lab - Hard
+
+---
+
 *Lab completed successfully with HTB user credentials obtained through systematic enumeration and privilege escalation techniques.*
