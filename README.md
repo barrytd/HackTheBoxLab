@@ -254,4 +254,3 @@ The successful completion of this lab demonstrates proficiency in:
 **Report Prepared By:** Robert Perez  
 **Date:** July 20, 2025  
 **Assessment Type:** HTB Academy Footprinting Lab - Easy  
-**Classification:** Training Exercise Documentation
