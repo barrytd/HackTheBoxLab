@@ -176,9 +176,157 @@ This module aligns with multiple professional certification standards:
 
 This module provides comprehensive coverage of manual enumeration techniques essential for cybersecurity professionals. The hands-on approach ensures practical skill development applicable to real-world penetration testing and security assessment scenarios.
 
-# Information Gathering - Web Edition (in-progress)
+# Information Gathering - Web Edition
 
-# Vulnerability Assessment (to be completed)
+## Module Overview
+
+This repository contains my completed coursework, notes, and practical exercises from the comprehensive web reconnaissance module. The module equipped me with essential web reconnaissance skills crucial for ethical hacking and penetration testing, exploring both active and passive information gathering techniques.
+
+## Module Description
+
+In the vast landscape of the internet, knowledge is power. For security professionals, understanding the intricacies of a target's digital presence is paramount. This module provided comprehensive training in web reconnaissance - the art and science of gathering information about websites and web applications.
+
+## Skills & Techniques Covered
+
+### Core Topics Mastered
+
+- **🔍 WHOIS Analysis** - Understanding WHOIS protocols and leveraging domain registration data for reconnaissance
+- **🌐 DNS Investigation** - Deep dive into Domain Name System mechanics and reconnaissance applications  
+- **📡 Subdomain Discovery** - Advanced techniques for discovering and analyzing subdomains across target infrastructure
+- **🕷️ Web Crawling** - Automated website exploration and systematic information gathering methodologies
+- **📚 Web Archives** - Utilizing Wayback Machine and historical data for intelligence gathering
+- **🔎 Search Engine Discovery** - Advanced search techniques and OSINT gathering through search engines
+- **🔧 Technology Fingerprinting** - Identifying and analyzing technologies powering websites and web applications
+
+### Hands-On Techniques Practiced
+
+- **WHOIS enumeration** and registration data analysis
+- **DNS interrogation** using dig, nslookup, and specialized tools  
+- **Subdomain bruteforcing** and enumeration techniques
+- **DNS zone transfer** testing and exploitation
+- **Virtual host** discovery and analysis
+- **Certificate Transparency** log mining
+- **Web crawling** with automated tools and manual techniques
+- **robots.txt** analysis and exploitation
+- **Well-known URI** discovery and reconnaissance
+- **Search engine dorking** and advanced query techniques
+- **Web archive** mining for historical intelligence
+- **Automated reconnaissance** workflow development
+
+## Module Structure Completed
+
+### ✅ Core Sections
+- [x] **Introduction** - Web reconnaissance fundamentals
+- [x] **WHOIS** - Protocol understanding and applications  
+- [x] **Utilizing WHOIS** - Practical WHOIS reconnaissance
+- [x] **DNS** - Domain Name System deep dive
+- [x] **Digging DNS** - Advanced DNS interrogation techniques
+- [x] **Subdomains** - Subdomain discovery methodologies
+- [x] **Subdomain Bruteforcing** - Automated subdomain enumeration
+- [x] **DNS Zone Transfers** - Zone transfer attacks and testing
+- [x] **Virtual Hosts** - Virtual host discovery techniques
+- [x] **Certificate Transparency Logs** - CT log mining for reconnaissance
+
+### ✅ Advanced Techniques  
+- [x] **Fingerprinting** - Technology identification and analysis
+- [x] **Crawling** - Web crawling fundamentals and applications
+- [x] **robots.txt** - Robots file analysis and exploitation
+- [x] **Well-Known URIs** - Standard URI discovery techniques
+- [x] **Creepy Crawlies** - Advanced crawling methodologies
+- [x] **Search Engine Discovery** - OSINT and search engine techniques
+- [x] **Web Archives** - Historical data mining and analysis
+- [x] **Automating Recon** - Workflow automation and tool chaining
+
+### ✅ Assessment
+- [x] **Skills Assessment** - Comprehensive practical evaluation
+
+## Prerequisites Completed
+
+This module built upon foundational knowledge from:
+- **Linux Fundamentals** - Command line proficiency and system navigation
+- **Web Requests** - HTTP/HTTPS protocol understanding  
+- **Introduction to Web Applications** - Web application architecture and security basics
+
+## Key Learning Outcomes
+
+Through completing this module, I developed expertise in:
+
+### Technical Skills
+- **Reconnaissance Methodology** - Systematic approach to information gathering
+- **OSINT Techniques** - Open-source intelligence collection and analysis
+- **DNS Security Assessment** - DNS infrastructure analysis and vulnerability identification
+- **Web Technology Analysis** - Comprehensive web application fingerprinting
+- **Automation Development** - Creating efficient reconnaissance workflows
+
+### Operational Knowledge
+- **Active vs Passive Techniques** - Strategic selection of reconnaissance approaches
+- **Stealth Considerations** - Minimizing detection during information gathering
+- **Data Correlation** - Synthesizing information from multiple sources
+- **Target Profiling** - Building comprehensive target intelligence profiles
+
+## Tools & Technologies Utilized
+
+### DNS Reconnaissance
+- **dig** - DNS lookup and interrogation
+- **nslookup** - DNS query and resolution
+- **dnsenum** - DNS enumeration tool
+- **fierce** - DNS scanner and subdomain discovery
+
+### Web Analysis
+- **Burp Suite** - Web application security testing platform
+- **OWASP ZAP** - Web application scanner
+- **Nikto** - Web server vulnerability scanner
+- **curl/wget** - HTTP client utilities
+
+### OSINT & Discovery
+- **theHarvester** - Email and subdomain gathering
+- **Sublist3r** - Subdomain enumeration
+- **Google Dorking** - Advanced search techniques
+- **Wayback Machine** - Web archive analysis
+
+### Automation & Scripting
+- **Custom bash scripts** - Automated reconnaissance workflows
+- **Python tools** - Custom reconnaissance applications
+- **Tool chaining** - Integrated reconnaissance pipelines
+
+## Practical Applications
+
+The skills gained from this module apply directly to:
+- **Penetration Testing** - Initial reconnaissance and attack surface mapping
+- **Bug Bounty Hunting** - Target analysis and vulnerability discovery
+- **Security Assessments** - Comprehensive security posture evaluation
+- **Threat Intelligence** - Digital footprint analysis and monitoring
+- **Red Team Operations** - Advanced persistent threat simulation
+
+## Repository Structure
+
+```
+information-gathering-web/
+├── notes/                  # Detailed module notes and theory
+├── exercises/             # Hands-on exercise solutions
+├── tools/                 # Custom scripts and tool configurations  
+├── examples/              # Practical examples and case studies
+├── automation/            # Reconnaissance automation scripts
+├── resources/             # Additional references and materials
+└── skills-assessment/     # Skills assessment documentation
+```
+
+## Ethical Use Statement
+
+All techniques and methodologies learned in this module are intended for:
+- **Authorized security testing** with proper written permission
+- **Educational purposes** and skill development
+- **Defensive security** improvement and awareness
+- **Legal bug bounty** and responsible disclosure programs
+
+## Certification & Completion
+
+- ✅ **All exercises completed** with hands-on practice
+- ✅ **Skills assessment passed** demonstrating practical competency  
+- ✅ **Maximum cubes earned** for comprehensive module completion
+- ✅ **Applicable to learning paths** for continued cybersecurity education
+
+# Vulnerability Assessment (in-progress)
 
 # File Transfers (to be completed)	
 
